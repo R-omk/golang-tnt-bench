@@ -1,0 +1,9 @@
+#!/usr/bin/env tarantool
+
+console = require('console')
+local cmd = "require('console').connect('localhost:3301')"
+-- console.connect('admin:secretpassword@distanthost.com:3301').
+console.on_start( function(self) self:eval(cmd) end )
+console.on_client_disconnect( function(self) self.running = false end )
+console.start()
+

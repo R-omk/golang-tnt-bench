@@ -1,0 +1,46 @@
+version: '2'
+services:
+  go_cut:
+    build:
+      context: .
+      dockerfile: ./go/Dockerfile
+    depends_on:
+#      - tnt
+      - redis
+      - memcached
+    environment:
+      PARALLEL: "100"
+      ITERATIONS: "10000"
+
+  gobin:
+    build:
+      context: .
+      dockerfile: ./gobin/Dockerfile
+    depends_on:
+      - tnt
+      - redis
+      - memcached
+    environment:
+      PARALLEL: "10000"
+      ITERATIONS: "100"
+
+  tnt:
+    build: ./tnt
+    command: "/usr/local/bin/tarantool /opt/tarantool/app/app.lua"
+    volumes:
+      - ./lua:/opt/tarantool/app/
+      - ./data:/data
+
+  redis:
+    image: redis
+
+  memcached:
+    image: memcached
+    privileged: true
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  
